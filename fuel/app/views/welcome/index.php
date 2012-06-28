@@ -3,7 +3,7 @@
 <head>
 <title>環警隊 - 財產管理</title>
 <meta charset="utf-8">
-<?php echo Asset::css('mos-style.css');?>
+<?php echo Asset::css(array('mos-style.css','style.css'));?>
 </head>
 
 <body>
@@ -21,7 +21,7 @@
 		<?php echo Form::input('username','',array('class'=>'login'));?>
 		<?php echo Form::label('密碼：')?>
 		<?php echo Form::password('username','',array('class'=>'login'));?>
-		<?php echo Form::submit(array('value'=>'登入','class'=>'button'));?>
+		<?php echo Form::submit(array('value'=>'登入','class'=>'button','name'=>'sub_btn'));?>
 		<?php echo Form::close();?>
 	</div>
 </div>
