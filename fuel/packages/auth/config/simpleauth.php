@@ -40,22 +40,17 @@ return array(
 	/**
 	 * This will allow you to use the group & acl driver for non-logged in users
 	 */
-	'guest_login' => true,
+	'guest_login' => false,
 
 	/**
 	 * Groups as id => array(name => <string>, roles => <array>)
 	 */
 	'groups' => array(
-		/**
-		 * Examples
-		 * ---
-		 *
-		 * -1   => array('name' => 'Banned', 'roles' => array('banned')),
-		 * 0    => array('name' => 'Guests', 'roles' => array()),
-		 * 1    => array('name' => 'Users', 'roles' => array('user')),
-		 * 50   => array('name' => 'Moderators', 'roles' => array('user', 'moderator')),
-		 * 100  => array('name' => 'Administrators', 'roles' => array('user', 'moderator', 'admin')),
-		 */
+		-1   => array('name' => 'Banned', 'roles' => array('banned')),
+		0    => array('name' => 'Guests', 'roles' => array()),
+		1    => array('name' => '中隊', 'roles' => array('user')),
+		50   => array('name' => '全隊', 'roles' => array('user', 'moderator')),
+		100  => array('name' => '系統管理', 'roles' => array('user', 'moderator', 'admin')),
 	),
 
 	/**

@@ -7,7 +7,7 @@
 		<?php echo Form::label('帳號：')?>
 		<?php echo Form::input('username');?>
 		<?php echo Form::label('密碼：')?>
-		<?php echo Form::password('username');?>
+		<?php echo Form::password('password');?>
 		<?php echo Form::submit(array('value'=>'登入','class'=>'button','name'=>'sub_btn'));?>
 		<?php echo Form::close();?>
 	</div>
