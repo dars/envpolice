@@ -8,7 +8,9 @@ class Model_Users extends \Orm\Model
 		'name',
 		'email',
 		'group',
+		'location_id',
 		'phone',
+		'status',
 		'profile_fields',
 		'cell_phone',
 		'last_login',
@@ -25,6 +27,14 @@ class Model_Users extends \Orm\Model
 		'Orm\Observer_UpdatedAt' => array(
 			'events' => array('before_save'),
 			'mysql_timestamp' => false,
+		),
+	);
+
+	protected static $_belongs_to = array(
+		'location' => array(
+			'key_from' => 'location_id',
+			'model_to' => 'Model_Locations',
+			'key_to' => 'id'
 		),
 	);
 }

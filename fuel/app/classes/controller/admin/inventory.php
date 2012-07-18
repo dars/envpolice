@@ -11,8 +11,16 @@ class Controller_Admin_Inventory extends Controller_admin
 	{
 		$view = View::forge('inventory/index');
 		$data = array();
-		$this->template->title = '使用者財產-財產清冊';
-		$result = Model_Assets::find()->order_by('created_at','desc');
+		$this->template->title = '使用中財產-財產清冊';
+		$result = Model_Assets::find();
+		if(Input::get('status'))
+		{
+			if(Input::get('status') == 'deleted')
+			{
+				$result->where('status',0);
+			}
+		}
+		$result->order_by('created_at','desc');
 		$config = array(
 			'pagination_url' => Uri::create('admin/inventory/index'),
 			'total_items' => $result->count(),
@@ -29,10 +37,42 @@ class Controller_Admin_Inventory extends Controller_admin
 
 		);
 		Pagination::set_config($config);
+		
+		$users = Model_Users::find('all');
+		$data['users'] = array();
+		foreach($users as $u)
+		{
+			$data['users'][$u->id] = $u->name;
+		}
+
+		$locations = Model_Locations::find('all');
+		$data['locations'] = array();
+		foreach($locations as $l)
+		{
+			$data['locations'][$l->id] = $l->name;
+		}
+
+
 		$data['result'] = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
 		$data['pagination'] = Pagination::create_links();
 		$data['offset'] = Pagination::$offset;
 		$view->set('data',$data,false);
 		$this->template->content = $view;
+	}
+	public function action_view($id)
+	{
+		$model = Model_Assets::find($id);
+		if($model)
+		{
+			$view = View::forge('inventory/view');
+			$view->set('model',$model,false);
+			$this->template->title = ' - 財產資料';
+			$this->template->content = $view;
+		}
+		else
+		{
+			Session::set_flash('notice', array('type'=>'error','msg'=>'Sorry, 錯誤的需求參數'));
+			Response::redirect('admin/inventory');
+		}
 	}
 }

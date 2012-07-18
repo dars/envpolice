@@ -10,6 +10,7 @@ class Model_Assets extends \Orm\Model
 		'location_id',
 		'buy_date',
 		'expire_date',
+		'expiration_time',
 		'amount',
 		'qty',
 		'years',

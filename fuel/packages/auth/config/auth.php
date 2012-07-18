@@ -20,7 +20,7 @@
  */
 
 return array(
-	'driver' => 'SimpleAuth',
+	'driver' => array('SimpleAuth'),
 	'verify_multiple_logins' => false,
 	'salt' => 'envPolice2012Inforise',
 );

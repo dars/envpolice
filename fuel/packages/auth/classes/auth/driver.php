@@ -68,7 +68,9 @@ abstract class Auth_Driver
 	/**
 	 * @var	array	given configuration array
 	 */
-	protected $config = array();
+	protected $config = array(
+		
+	);
 
 	protected function __construct(Array $config)
 	{
