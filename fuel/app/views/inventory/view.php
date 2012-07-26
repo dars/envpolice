@@ -43,6 +43,8 @@
 			<th>最後修改：</th>
 			<td colspan=3><?php echo $model->updated_at ?></td>
 		</tr>
-	</table>	
+	</table>
+	<a class="btn btn-inverse" href='<?php echo Uri::create('admin/inventory/edit/'.$model->id)?>'><i class="icon-edit icon-white"></i>修改</a>	
 </div>
+
 <?php echo Html::anchor('javascript:history.back()','返回上一頁');?>

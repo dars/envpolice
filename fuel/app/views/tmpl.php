@@ -39,7 +39,7 @@ $(function(){
 <div id="header">
 	<div class="inHeaderLogin">
 		<div class="mosAdmin">
-			Hallo, <?php echo Auth::get_screen_name()?><br>
+			Hello, <?php echo Auth::get_screen_name()?><br>
 			<a href="<?php echo Uri::create('admin/logout')?>">Logout</a>
 		</div>
 	</div>
