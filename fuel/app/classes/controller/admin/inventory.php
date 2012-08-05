@@ -29,6 +29,41 @@ class Controller_Admin_Inventory extends Controller_admin
 		{
 			$result->where('status',1);
 		}
+
+		// 搜尋條件
+		if(Input::get('total_no')){
+			$result->where('total_no',Input::get('total_no'));
+		}
+
+		if(Input::get('sub_no')){
+			$result->where('sub_no',Input::get('sub_no'));
+		}
+
+		if(Input::get('name')){
+			$result->where('name',Input::get('name'));
+		}
+
+		if(Input::get('note')){
+			$tmp_str = '%'.Input::get('note').'%';
+			$result->where('note','like',$tmp_str);
+		}
+
+		if(Input::get('user_id')){
+			$result->where('user_id',Input::get('user_id'));
+		}
+
+		if(Input::get('location_id')){
+			$result->where('location_id',Input::get('location_id'));
+		}
+
+		if(Input::get('buy_date')){
+			$result->where('buy_date',Input::get('buy_date'));
+		}
+
+		if(Input::get('expiration_time')){
+			$result->where('expiration_time',Input::get('expiration_time'));
+		}
+
 		$result->order_by('created_at','desc');
 		$config = array(
 			'pagination_url' => Uri::create('admin/inventory/index'),
@@ -49,6 +84,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		
 		$users = Model_Users::find('all');
 		$data['users'] = array();
+		$data['users'][0] = '請選擇';
 		foreach($users as $u)
 		{
 			$data['users'][$u->id] = $u->name;
@@ -56,6 +92,7 @@ class Controller_Admin_Inventory extends Controller_admin
 
 		$locations = Model_Locations::find('all');
 		$data['locations'] = array();
+		$data['locations'][0] = '請選擇';
 		foreach($locations as $l)
 		{
 			$data['locations'][$l->id] = $l->name;
@@ -204,11 +241,8 @@ class Controller_Admin_Inventory extends Controller_admin
 				$chks = array();
 				if(Input::post('status') == 1)
 				{
-					$result = Model_Assets::find();
-					$result->order_by('created_at','desc');
+					$result = Model_Assets::find()->get();
 					foreach($result as $t){
-						echo 1;
-						echo $t->id;
 						array_push($chks,$t->id);
 					}
 				}

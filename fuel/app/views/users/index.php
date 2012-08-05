@@ -11,9 +11,18 @@ $(function(){
 	$('#del_sub_btn').click(function(){
 		location.href = "<?php echo Uri::create('admin/users/delete')?>/"+id;
 	});
+
+	// 新增
+	$('#add_btn').click(function(){
+		location.href = '<?php echo Uri::create('admin/users/create')?>';
+	});
 });
 </script>
 <h3>使用者列表 - 帳號管理</h3>
+<div class="btn-group" style="float:right">
+	<button class="btn btn-info" id="add_btn"><i class="icon-plus icon-white"></i>新增</button>
+</div>
+<br><br>
 <table class='table table-striped table-bordered table-condensed'>
 	<thead>
 		<tr>

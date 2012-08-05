@@ -37,4 +37,18 @@ class Model_Users extends \Orm\Model
 			'key_to' => 'id'
 		),
 	);
+
+	public static function get_user_name($id){
+		$model = Model_Users::find($id);
+		return $model->name;
+	}
+
+	public static function get_user_id($name){
+		$model = Model_Users::find()->where('name',$name)->get_one();
+		if($model){
+			return $model->id;
+		}else{
+			return 0;
+		}
+	}
 }

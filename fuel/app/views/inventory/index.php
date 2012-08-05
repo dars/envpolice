@@ -9,6 +9,15 @@ $(function() {
     	}
 	});
 
+	// 取消搜尋
+	$('#form_reset_btn').click(function(){
+		var url = "<?php echo Uri::create('admin/inventory')?>";
+		if($('#form_status').val() == 'deleted'){
+			url += "?status=deleted";
+		}
+		location.href = url;
+	});
+
 	// 新增
 	$('#add_btn').click(function(){
 		location.href = '<?php echo Uri::create('admin/inventory/create')?>';
@@ -96,33 +105,34 @@ $(function() {
 });
 </script>
 <div>
-	<?php echo Form::open(array('class'=>'well form-inline')) ?>
+	<?php echo Form::open(array('class'=>'well form-inline','method'=>'get')) ?>
 	<table>
 		<tr>
 			<td><?php echo Form::label('總號：') ?></td>
-			<td><?php echo Form::input('total_no','',array('class'=>'span2')) ?></td>
+			<td><?php echo Form::input('total_no',Input::get('total_no',''),array('class'=>'span2')) ?></td>
 			<td><?php echo Form::label('分類編號：') ?></td>
-			<td><?php echo Form::input('sub_no','',array('class'=>'span2')) ?></td>
+			<td><?php echo Form::input('sub_no',Input::get('sub_no',''),array('class'=>'span2')) ?></td>
 			<td><?php echo Form::label('品名：') ?></td>
-			<td><?php echo Form::input('name','',array('class'=>'span2'))?></td>
+			<td><?php echo Form::input('name',Input::get('name',''),array('class'=>'span2'))?></td>
 		</tr>
 		<tr>
 			<td><?php echo Form::label('備註：') ?></td>
-			<td><?php echo Form::input('note','',array('class'=>'span2'))?></td>
+			<td><?php echo Form::input('note',Input::get('note',''),array('class'=>'span2'))?></td>
 			<td><?php echo Form::label('放置地點：') ?></td>
-			<td><?php echo Form::select('location_id','',$data['locations'],array('class'=>'span2'))?></td>
+			<td><?php echo Form::select('location_id',Input::get('location_id',''),$data['locations'],array('class'=>'span2'))?></td>
 			<td><?php echo Form::label('保管人：') ?></td>
-			<td><?php echo Form::select('user_id','',$data['users'],array('class'=>'span2'))?></td>
+			<td><?php echo Form::select('user_id',Input::get('user_id',''),$data['users'],array('class'=>'span2'))?></td>
 		</tr>
 		<tr>
 			<td><?php echo Form::label('採購日期：') ?></td>
-			<td><?php echo Form::input('buy_date','',array('class'=>'span2'))?></td>
+			<td><?php echo Form::input('buy_date',Input::get('buy_date',''),array('class'=>'span2'))?></td>
 			<td><?php echo Form::label('逾期時間：') ?></td>
-			<td><?php echo Form::input('expiration_time','',array('class'=>'span2'))?></td>
+			<td><?php echo Form::input('expiration_time',Input::get('expiration_time',''),array('class'=>'span2'))?></td>
 			<td colsapn=2>&nbsp;</td>
 		</tr>
 		<tr>
 			<td colspan=6 style="text-align:right">
+				<?php echo Form::hidden('status',Input::get('status',''));?>
 				<?php echo Form::reset('reset_btn','清除',array('class'=>'btn'))?>&nbsp;
 				<?php echo Form::submit('sub_btn','搜尋',array('class'=>'btn btn-info'))?>
 			</td>
@@ -150,8 +160,9 @@ $(function() {
 if($data['result']){
 	echo "<table class='table table-striped table-bordered table-condensed'>";
 	echo "<thead><tr>";
-	echo "<th><input type='checkbox' id='chk_all_btn'></th>";
-	echo "<th>項目</th>";
+	//echo "<th><input type='checkbox' id='chk_all_btn'></th>";
+	echo "<th>&nbsp;</th>";
+	echo "<th><nobr>項目</nobr></th>";
 	echo "<th>總號</th>";
 	echo "<th>分類編號</th>";
 	echo "<th>品名</th>";
