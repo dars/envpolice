@@ -87,10 +87,14 @@ class Controller_Admin_Inventory extends Controller_admin
 
 		if(Input::get('amount')!=NULL || isset($condition['amount'])){
 			$condition['amount'] = Input::get('amount', @$condition['amount']);
-			if($condition['amount'] == '10000up'){
-				$result->where('amount','>=',Input::get('amount', @$condition['amount']));
-			}else if($condition['amount'] == '10000down'){
-				$result->where('amount','<=',Input::get('amount', @$condition['amount']));
+			if($condition['amount'] != ''){
+				if($condition['amount'] == '10000up'){
+					$result->where('amount','>=',Input::get('amount', @$condition['amount']));
+				}else if($condition['amount'] == '10000down'){
+					$result->where('amount','<=',Input::get('amount', @$condition['amount']));
+				}
+			}else{
+				unset($condition['amount']);
 			}
 		}
 
