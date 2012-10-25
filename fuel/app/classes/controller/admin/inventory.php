@@ -33,6 +33,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		{
 			if(Input::get('status') == 'deleted')
 			{
+				$condition = array();
 				$condition['status'] = 0;
 				$result->where('status',0);
 			}
