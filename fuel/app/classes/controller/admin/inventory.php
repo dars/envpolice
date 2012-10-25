@@ -68,7 +68,7 @@ class Controller_Admin_Inventory extends Controller_admin
 
 		if(Input::get('user_id')!=NULL || isset($condition['user_id'])){
 			$condition['user_id'] = Input::get('user_id', @$condition['user_id']);
-			if($condition['user_id'] != ''){
+			if($condition['user_id'] != '' && $condition['user_id'] != 0){
 				$result->where('user_id',Input::get('user_id', @$condition['user_id']));
 			}else{
 				unset($condition['user_id']);
@@ -77,7 +77,7 @@ class Controller_Admin_Inventory extends Controller_admin
 
 		if(Input::get('location_id')!=NULL || isset($condition['location_id'])){
 			$condition['location_id'] = Input::get('location_id', @$condition['location_id']);
-			if($condition['location_id'] != ''){
+			if($condition['location_id'] != '' && $condition['location_id'] != 0){
 				$result->where('location_id',Input::get('location_id', @$condition['location_id']));
 			}else{
 				unset($condition['location_id']);
