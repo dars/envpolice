@@ -44,39 +44,47 @@ class Controller_Admin_Inventory extends Controller_admin
 		}
 
 		// 搜尋條件
-		if(Input::get('total_no') || isset($condition['total_no'])){
+		if(Input::get('total_no')!=NULL || isset($condition['total_no'])){
 			$condition['total_no'] = Input::get('total_no', @$condition['total_no']);
 			$result->where('total_no', Input::get('total_no', @$condition['total_no']));
 		}
 
-		if(Input::get('sub_no') || isset($condition['sub_no'])){
+		if(Input::get('sub_no')!=NULL || isset($condition['sub_no'])){
 			$condition['sub_no'] = Input::get('sub_no', @$condition['sub_no']);
 			$result->where('sub_no',Input::get('sub_no', @$condition['sub_no']));
 		}
 
-		if(Input::get('name') || isset($condition['name'])){
+		if(Input::get('name')!=NULL || isset($condition['name'])){
 			$tmp_str = '%'.Input::get('name', @$condition['name']).'%';
 			$condition['name'] = Input::get('name', @$condition['name']);
 			$result->where('name','like',$tmp_str);
 		}
 
-		if(Input::get('note') || isset($condition['note'])){
+		if(Input::get('note')!=NULL || isset($condition['note'])){
 			$tmp_str = '%'.Input::get('note', @$condition['note']).'%';
 			$condition['note'] = Input::get('note', @$condition['note']);
 			$result->where('note','like',$tmp_str);
 		}
 
-		if(Input::get('user_id') || isset($condition['user_id'])){
+		if(Input::get('user_id')!=NULL || isset($condition['user_id'])){
 			$condition['user_id'] = Input::get('user_id', @$condition['user_id']);
-			$result->where('user_id',Input::get('user_id', @$condition['user_id']));
+			if($condition['user_id'] != ''){
+				$result->where('user_id',Input::get('user_id', @$condition['user_id']));
+			}else{
+				unset($condition['user_id']);
+			}
 		}
 
-		if(Input::get('location_id') || isset($condition['location_id'])){
+		if(Input::get('location_id')!=NULL || isset($condition['location_id'])){
 			$condition['location_id'] = Input::get('location_id', @$condition['location_id']);
-			$result->where('location_id',Input::get('location_id', @$condition['location_id']));
+			if($condition['location_id'] != ''){
+				$result->where('location_id',Input::get('location_id', @$condition['location_id']));
+			}else{
+				unset($condition['location_id']);
+			}
 		}
 
-		if(Input::get('amount') || isset($condition['amount'])){
+		if(Input::get('amount')!=NULL || isset($condition['amount'])){
 			$condition['amount'] = Input::get('amount', @$condition['amount']);
 			if($condition['amount'] == '10000up'){
 				$result->where('amount','>=',Input::get('amount', @$condition['amount']));
@@ -85,12 +93,12 @@ class Controller_Admin_Inventory extends Controller_admin
 			}
 		}
 
-		if(Input::get('buy_date') || isset($condition['buy_date'])){
+		if(Input::get('buy_date')!=NULL || isset($condition['buy_date'])){
 			$condition['buy_date'] = Input::get('buy_date', @$condition['buy_date']);
 			$result->where('buy_date',Input::get('buy_date', @$condition['buy_date']));
 		}
 
-		if(Input::get('expiration_time') || isset($condition['expiration_time'])){
+		if(Input::get('expiration_time')!=NULL || isset($condition['expiration_time'])){
 			$condition['expiration_time'] = Input::get('expiration_time', @$condition['expiration_time']);
 			$result->where('expiration_time',Input::get('expiration_time', @$condition['expiration_time']));
 		}
@@ -119,7 +127,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		
 		$users = Model_Users::find('all');
 		$data['users'] = array();
-		$data['users'][0] = '請選擇';
+		$data['users'][''] = '請選擇';
 		foreach($users as $u)
 		{
 			$data['users'][$u->id] = $u->name;
@@ -127,15 +135,13 @@ class Controller_Admin_Inventory extends Controller_admin
 
 		$locations = Model_Locations::find('all');
 		$data['locations'] = array();
-		$data['locations'][0] = '請選擇';
+		$data['locations'][''] = '請選擇';
 		foreach($locations as $l)
 		{
 			$data['locations'][$l->id] = $l->name;
 		}
-
-
-		$data['result'] = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
 		$data['total_result'] = $result->count();
+		$data['result'] = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
 		$data['pagination'] = Pagination::create_links();
 		$data['offset'] = Pagination::$offset;
 		$data['chks'] = Session::get('chks');
