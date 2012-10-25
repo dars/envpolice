@@ -491,6 +491,16 @@ class Auth_Login_SimpleAuth extends \Auth_Login_Driver
 		return $this->user['username'];
 	}
 
+	public function get_user_name()
+	{
+		if (empty($this->user))
+		{
+			return false;
+		}
+
+		return $this->user['name'];
+	}
+
 	/**
 	 * Get the user's profile fields
 	 *

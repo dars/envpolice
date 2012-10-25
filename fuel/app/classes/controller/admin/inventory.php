@@ -18,52 +18,87 @@ class Controller_Admin_Inventory extends Controller_admin
 		$data = array();
 		$this->template->title = '使用中財產-財產清冊';
 		$result = Model_Assets::find();
+		
+		if(Input::get('clear')){
+			Session::delete('condition');
+		}
+
+		if(Session::get('condition') || !Input::get('clear')){
+			$condition = Session::get('condition');
+		}else{
+			$condition = array();
+		}
+
 		if(Input::get('status'))
 		{
 			if(Input::get('status') == 'deleted')
 			{
+				$condition['status'] = 0;
 				$result->where('status',0);
 			}
 		}
 		else
 		{
+			$condition['status'] = 1;
 			$result->where('status',1);
 		}
 
 		// 搜尋條件
-		if(Input::get('total_no')){
-			$result->where('total_no',Input::get('total_no'));
+		if(Input::get('total_no') || isset($condition['total_no'])){
+			$condition['total_no'] = Input::get('total_no', @$condition['total_no']);
+			$result->where('total_no', Input::get('total_no', @$condition['total_no']));
 		}
 
-		if(Input::get('sub_no')){
-			$result->where('sub_no',Input::get('sub_no'));
+		if(Input::get('sub_no') || isset($condition['sub_no'])){
+			$condition['sub_no'] = Input::get('sub_no', @$condition['sub_no']);
+			$result->where('sub_no',Input::get('sub_no', @$condition['sub_no']));
 		}
 
-		if(Input::get('name')){
-			$result->where('name',Input::get('name'));
+		if(Input::get('name') || isset($condition['name'])){
+			$tmp_str = '%'.Input::get('name', @$condition['name']).'%';
+			$condition['name'] = Input::get('name', @$condition['name']);
+			$result->where('name','like',$tmp_str);
 		}
 
-		if(Input::get('note')){
-			$tmp_str = '%'.Input::get('note').'%';
+		if(Input::get('note') || isset($condition['note'])){
+			$tmp_str = '%'.Input::get('note', @$condition['note']).'%';
+			$condition['note'] = Input::get('note', @$condition['note']);
 			$result->where('note','like',$tmp_str);
 		}
 
-		if(Input::get('user_id')){
-			$result->where('user_id',Input::get('user_id'));
+		if(Input::get('user_id') || isset($condition['user_id'])){
+			$condition['user_id'] = Input::get('user_id', @$condition['user_id']);
+			$result->where('user_id',Input::get('user_id', @$condition['user_id']));
 		}
 
-		if(Input::get('location_id')){
-			$result->where('location_id',Input::get('location_id'));
+		if(Input::get('location_id') || isset($condition['location_id'])){
+			$condition['location_id'] = Input::get('location_id', @$condition['location_id']);
+			$result->where('location_id',Input::get('location_id', @$condition['location_id']));
 		}
 
-		if(Input::get('buy_date')){
-			$result->where('buy_date',Input::get('buy_date'));
+		if(Input::get('amount') || isset($condition['amount'])){
+			$condition['amount'] = Input::get('amount', @$condition['amount']);
+			if($condition['amount'] == '10000up'){
+				$result->where('amount','>=',Input::get('amount', @$condition['amount']));
+			}else if($condition['amount'] == '10000down'){
+				$result->where('amount','<=',Input::get('amount', @$condition['amount']));
+			}
 		}
 
-		if(Input::get('expiration_time')){
-			$result->where('expiration_time',Input::get('expiration_time'));
+		if(Input::get('buy_date') || isset($condition['buy_date'])){
+			$condition['buy_date'] = Input::get('buy_date', @$condition['buy_date']);
+			$result->where('buy_date',Input::get('buy_date', @$condition['buy_date']));
 		}
 
+		if(Input::get('expiration_time') || isset($condition['expiration_time'])){
+			$condition['expiration_time'] = Input::get('expiration_time', @$condition['expiration_time']);
+			$result->where('expiration_time',Input::get('expiration_time', @$condition['expiration_time']));
+		}
+		Session::set('condition',$condition);
+		$auth = Auth::instance()->get_user_id();
+		if(!Auth::member(100) && !Auth::member(50)){
+			$result->where('user_id',$auth[1]);
+		}
 		$result->order_by('created_at','desc');
 		$config = array(
 			'pagination_url' => Uri::create('admin/inventory/index'),
@@ -100,6 +135,7 @@ class Controller_Admin_Inventory extends Controller_admin
 
 
 		$data['result'] = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
+		$data['total_result'] = $result->count();
 		$data['pagination'] = Pagination::create_links();
 		$data['offset'] = Pagination::$offset;
 		$data['chks'] = Session::get('chks');
@@ -128,6 +164,10 @@ class Controller_Admin_Inventory extends Controller_admin
 	}
 
 	public function action_create(){
+		if(!Auth::member(100)){
+			Session::set_flash('notice',array('type'=>'error','msg'=>'您無此動作的權限'));
+			Response::redirect('admin/inventory');
+		}
 		if(Input::method() == 'POST')
 		{
 			$times = Input::post('times');
@@ -173,6 +213,10 @@ class Controller_Admin_Inventory extends Controller_admin
 	}
 
 	public function action_edit($id){
+		if(!Auth::member(100)){
+			Session::set_flash('notice',array('type'=>'error','msg'=>'您無此動作的權限'));
+			Response::redirect('admin/inventory');
+		}
 		if(Input::method() == 'POST')
 		{
 			$model = Model_Assets::find(Input::post('id'));
@@ -217,8 +261,11 @@ class Controller_Admin_Inventory extends Controller_admin
 		$this->template->title = '編輯 - 財產資料';
 		$this->template->content = $view;
 	}
-
-	public function action_delete(){
+	public function action_minus(){
+		if(!Auth::member(100)){
+			Session::set_flash('notice',array('type'=>'error','msg'=>'您無此動作的權限'));
+			Response::redirect('admin/inventory');
+		}
 		$this->template = false;
 		$ids = explode(',',Input::post('ids'));
 		foreach($ids as $v){
@@ -230,53 +277,110 @@ class Controller_Admin_Inventory extends Controller_admin
 		}
 		Session::set('chks',array());
 		Session::set_flash('notice',array('type'=>'success','msg'=>'資料已轉入報廢清單'));
+		$res = new stdClass();
+		$res->success = true;
+		echo json_encode($res);
+	}
+
+	public function action_delete(){
+		if(!Auth::member(100)){
+			Session::set_flash('notice',array('type'=>'error','msg'=>'您無此動作的權限'));
+			Response::redirect('admin/inventory');
+		}
+		$this->template = false;
+		$ids = explode(',',Input::post('ids'));
+		foreach($ids as $v){
+			$model = Model_Assets::find($v);
+			if($model){
+				$model->delete();
+			}
+		}
+		Session::set('chks',array());
+		Session::set_flash('notice',array('type'=>'success','msg'=>'資料已刪除完畢'));
+		$res = new stdClass();
+		$res->success = true;
+		echo json_encode($res);
 	}
 
 	public function action_chk_session(){
 		$this->template = null;
 		if(Input::method() == 'POST')
 		{
-			if(Input::post('chk_all') == 1)
-			{
+			$chks = Session::get('chks');
+			$ids = explode(',',Input::post('ids'));
+
+			if(!is_array($chks)){
 				$chks = array();
-				if(Input::post('status') == 1)
+			}
+			
+			if(Input::post('status') == 1)
+			{
+				foreach($ids as $t)
 				{
-					$result = Model_Assets::find()->get();
-					foreach($result as $t){
-						array_push($chks,$t->id);
+					if(array_search($t,$chks) === false)
+					{
+						array_push($chks,$t); 
 					}
 				}
 			}
 			else
 			{
-				$chks = Session::get('chks');
-				$ids = explode(',',Input::post('ids'));
-
-				if(!is_array($chks)){
-					$chks = array();
-				}
-				
-				if(Input::post('status') == 1)
+				foreach($ids as $t)
 				{
-					foreach($ids as $t)
-					{
-						if(array_search($t,$chks) === false)
-						{
-							array_push($chks,$t); 
-						}
-					}
-				}
-				else
-				{
-					foreach($ids as $t)
-					{
-						$index = array_search($t,$chks);
-						unset($chks[$index]);
-					}
+					$index = array_search($t,$chks);
+					unset($chks[$index]);
 				}
 			}
 			$chks = array_unique($chks);
 			sort($chks);
+			Session::set('chks',$chks);
+		}
+	}
+
+	public function action_chk_all_session(){
+		$this->template = null;
+		if(Input::method() == 'POST')
+		{
+			$chks = array();
+			if(Input::post('status') == 1)
+			{
+				$result = Model_Assets::find();
+				$condition = Session::get('condition');
+				if(isset($condition['status'])){
+					$result->where('status',$condition['status']);
+				}
+				if(isset($condition['sub_no'])){
+					$result->where('sub_no',$condition['sub_no']);
+				}
+				if(isset($condition['name'])){
+					$result->where('name',$condition['name']);
+				}
+				if(isset($condition['note'])){
+					$result->where('note','like',$condition['note']);
+				}
+				if(isset($condition['user_id'])){
+					$result->where('user_id',$condition['user_id']);
+				}
+				if(isset($condition['location_id'])){
+					$result->where('location_id',$condition['location_id']);
+				}
+				if(isset($condition['buy_date'])){
+					$result->where('buy_date',$condition['buy_date']);
+				}
+				if(isset($condition['expiration_time'])){
+					$result->where('expiration_time',$condition['expiration_time']);
+				}
+				if(!Auth::member(100) && !Auth::member(50)){
+					$result->where('user_id',$auth[1]);
+				}
+				$res = $result->get();
+				foreach($res as $t){
+					array_push($chks,$t->id);
+				}
+			}
+			$chks = array_unique($chks);
+			sort($chks);
+			var_dump($chks);
 			Session::set('chks',$chks);
 		}
 	}
@@ -303,7 +407,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		$xls_obj->getProperties()->setCategory($title);
 		$xls_obj->setActiveSheetIndex(0);
 		$xls_obj->getActiveSheet()->setTitle('財產清冊');
-		$xls_obj->getActiveSheet()->mergeCells('A1:L1');
+		$xls_obj->getActiveSheet()->mergeCells('A1:M1');
 		$xls_obj->getActiveSheet()->getRowDimension('1')->setRowHeight(26);
 		$xls_obj->getActiveSheet()->getStyle('A1')->getFont()->getColor()->setARGB(PHPExcel_Style_Color::COLOR_DARKGREEN);
 		$xls_obj->getActiveSheet()->getStyle('A1')->getFont()->setBold(true);
@@ -325,6 +429,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		$xls_obj->getActiveSheet()->setCellValue('J2', '保管人');
 		$xls_obj->getActiveSheet()->setCellValue('K2', '到期日');
 		$xls_obj->getActiveSheet()->setCellValue('L2', '逾期時間');
+		$xls_obj->getActiveSheet()->setCellValue('M2', '備註');
 
 		$start_row = 3;
 		$index = 1;
@@ -336,16 +441,17 @@ class Controller_Admin_Inventory extends Controller_admin
 			$xls_obj->getActiveSheet()->setCellValue('E'.$start_row, $t->qty);
 			$xls_obj->getActiveSheet()->setCellValue('F'.$start_row, $t->buy_date);
 			$xls_obj->getActiveSheet()->setCellValue('G'.$start_row, $t->years);
-			$xls_obj->getActiveSheet()->setCellValue('H'.$start_row, $t->amount);
+			$xls_obj->getActiveSheet()->setCellValue('H'.$start_row, number_format($t->amount,2));
 			$xls_obj->getActiveSheet()->setCellValue('I'.$start_row, $t->location->name);
 			$xls_obj->getActiveSheet()->setCellValue('J'.$start_row, $t->user->name);
 			$xls_obj->getActiveSheet()->setCellValue('K'.$start_row, $t->expire_date);
-			$xls_obj->getActiveSheet()->setCellValue('L'.$start_row, $t->expiration_time);
+			$xls_obj->getActiveSheet()->setCellValue('L'.$start_row, Model_Assets::get_expire_day($t->expire_date));
+			$xls_obj->getActiveSheet()->setCellValue('M'.$start_row, $t->note);
 			$index++;
 			$start_row++;
 		endforeach;
 
-		//設定格式到A2~L2欄位
+		//設定格式到A2~M2欄位
 		$xls_obj->getActiveSheet()->getStyle('A2')->getFont()->getColor()->setARGB(PHPExcel_Style_Color::COLOR_BLUE);
 		$xls_obj->getActiveSheet()->getStyle('A2')->getFont()->setBold(true);
 		$xls_obj->getActiveSheet()->getStyle('A2')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -356,8 +462,8 @@ class Controller_Admin_Inventory extends Controller_admin
 		$xls_obj->getActiveSheet()->getStyle('A2')->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 		$xls_obj->getActiveSheet()->getStyle('A2')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID);
 		$xls_obj->getActiveSheet()->getStyle('A2')->getFill()->getStartColor()->setARGB(PHPExcel_Style_Color::COLOR_YELLOW);
-		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('A2'), 'B2:L2' );
-		$xls_obj->getActiveSheet()->getStyle('L2')->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('A2'), 'B2:M2' );
+		$xls_obj->getActiveSheet()->getStyle('M2')->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 		$xls_obj->getActiveSheet()->getColumnDimension('A')->setWidth(5);
 		$xls_obj->getActiveSheet()->getColumnDimension('B')->setWidth(10);
 		$xls_obj->getActiveSheet()->getColumnDimension('C')->setWidth(11);
@@ -370,7 +476,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		$xls_obj->getActiveSheet()->getColumnDimension('J')->setWidth(8);
 		$xls_obj->getActiveSheet()->getColumnDimension('k')->setWidth(10);
 		$xls_obj->getActiveSheet()->getColumnDimension('L')->setWidth(10);
-		
+		$xls_obj->getActiveSheet()->getColumnDimension('M')->setWidth(20);
 		$n = $index+2;
 
 		$xls_obj->getActiveSheet()->getStyle('A3')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
@@ -378,19 +484,23 @@ class Controller_Admin_Inventory extends Controller_admin
 		$xls_obj->getActiveSheet()->getStyle('A3')->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('A3'), 'A4:A'.$n );
 		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('A3'), 'E3:G'.$n );
-		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('A3'), 'I3:L'.$n );
+		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('A3'), 'I3:M'.$n );
 		$xls_obj->getActiveSheet()->getStyle('L3')->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('L3'), 'L4:L'.$n );
 		$xls_obj->getActiveSheet()->getStyle('B3')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_LEFT);
 		$xls_obj->getActiveSheet()->getStyle('B3')->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 		$xls_obj->getActiveSheet()->getStyle('B3')->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('B3'), 'B3:D'.$n );
-		$xls_obj->getActiveSheet()->getStyle('D3')->getFont()->setSize(8);
+		$xls_obj->getActiveSheet()->getStyle('D3')->getFont()->setSize(9);
 		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('D3'), 'D4:D'.$n );
 		$xls_obj->getActiveSheet()->getStyle('H3')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_RIGHT);
 		$xls_obj->getActiveSheet()->getStyle('H3')->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 		$xls_obj->getActiveSheet()->getStyle('H3')->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('H3'), 'H4:H'.$n);
+		$xls_obj->getActiveSheet()->getStyle('M3')->getFont()->setSize(9);
+		$xls_obj->getActiveSheet()->getStyle('M3')->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
+		$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('M3'), 'M4:M'.$n );
+
 		$xls_obj->getActiveSheet()->getDefaultStyle()->getFont()->setName('Arial');
 		$xls_obj->getActiveSheet()->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(2, 2);
 		$xls_obj->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
@@ -398,7 +508,7 @@ class Controller_Admin_Inventory extends Controller_admin
 
 		Autoloader::add_class('PHPExcel_Writer_Excel5',APPPATH.'vendor/PHPExcel/Writer/Excel5.php');
 		$objWriter = new PHPExcel_Writer_Excel5($xls_obj);
-		$file = "asset_".date('Ymd').".xls";
+		$file = " 環保警察隊財產清冊_".date('Ymd').".xls";
 		
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment; filename="'.$file.'"');

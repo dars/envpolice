@@ -35,4 +35,5 @@
 		</tr>
 	</table>
 </div>
+<?php echo Html::anchor('admin/users','返回列表');?>&nbsp;
 <?php echo Html::anchor('javascript:history.back()','返回上一頁');?>

@@ -3,7 +3,7 @@ class Controller_Admin extends Controller_Template
 {
 	public $template = 'login';
 	public function before()
-	{
+	{	
 		parent::before();
 		$this->template->flash_msg = View::forge('flash_msg');
 		if(Request::active()->action != 'logout'){
@@ -49,5 +49,8 @@ class Controller_Admin extends Controller_Template
 	{
 		Auth::logout();
 		Response::redirect('admin/login');
+	}
+	public function action_hashPwd(){
+		echo Auth::instance()->hash_password(Input::get('pwd'));
 	}
 }

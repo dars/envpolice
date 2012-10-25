@@ -2,7 +2,7 @@
 <?php echo Form::label('帳號')?>
 <?php echo Form::input('username',Input::post('username',isset($model)?$model->username:''))?>
 <?php echo Form::label('密碼')?>
-<?php echo Form::input('password',Input::post('password',''))?>
+<?php echo Form::password('password',Input::post('password',''))?>
 <?php echo isset($model)?'<span class="remark">&nbsp;不修改請留空</span>':'' ?>
 <?php echo Form::label('名稱')?>
 <?php echo Form::input('name',Input::post('name',isset($model)?$model->name:''))?>

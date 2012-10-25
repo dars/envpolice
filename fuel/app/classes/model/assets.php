@@ -43,4 +43,30 @@ class Model_Assets extends \Orm\Model
 			'key_to' => 'id'
 		)
 	);
+
+	public static function get_expire_day($date){
+		$str = '';
+		if($date != ''){
+			$tmp_date = explode("/",$date);
+			$sec = mktime(0,0,0,$tmp_date[1],$tmp_date[2],($tmp_date[0]+1911));
+			$due_sec = mktime(0,0,0,date('m'),date('d'),date('Y')) - $sec;
+			if($due_sec > 0){
+				$due_days = ($due_sec/86400);
+				$max_year = floor($due_days/365);
+				$max_month = floor(($due_days-(365*$max_year))/30);
+				$max_day = $due_days-(365*$max_year)-(30*$max_month);
+	
+				if($max_year > 0){
+					$str.= $max_year.'年'; 
+				}
+				if($max_month > 0){
+					$str.= $max_month.'月'; 
+				}
+				if($max_day > 0){
+					$str.= $max_day.'天'; 
+				}
+			}
+		}	
+		return $str;
+	}
 }

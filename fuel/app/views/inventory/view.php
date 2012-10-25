@@ -33,7 +33,7 @@
 			<th>到期日：</th>
 			<td><?php echo $model->expire_date ?></td>
 			<th>逾期時間：</th>
-			<td><?php echo $model->expiration_time ?></td>
+			<td><?php echo Model_Assets::get_expire_day($model->expire_date) ?></td>
 		</tr>
 		<tr>
 			<th>備註：</th>
@@ -44,7 +44,9 @@
 			<td colspan=3><?php echo $model->updated_at ?></td>
 		</tr>
 	</table>
-	<a class="btn btn-inverse" href='<?php echo Uri::create('admin/inventory/edit/'.$model->id)?>'><i class="icon-edit icon-white"></i>修改</a>	
+	<?php if(Auth::member(100)):?>
+		<a class="btn btn-inverse" href='<?php echo Uri::create('admin/inventory/edit/'.$model->id)?>'><i class="icon-edit icon-white"></i>修改</a>	
+	<?php endif; ?>
 </div>
 
 <?php echo Html::anchor('javascript:history.back()','返回上一頁');?>

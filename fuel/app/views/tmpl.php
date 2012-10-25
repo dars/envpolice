@@ -39,7 +39,7 @@ $(function(){
 <div id="header">
 	<div class="inHeaderLogin">
 		<div class="mosAdmin">
-			Hello, <?php echo Auth::get_screen_name()?><br>
+			Hello, <?php echo Auth::get_user_name()?><br>
 			<a href="<?php echo Uri::create('admin/logout')?>">Logout</a>
 		</div>
 	</div>
@@ -60,7 +60,7 @@ $(function(){
 	</div>
 	<div class="clear"></div>
 	<div id="footer">
-		&copy;2012 訊揚科技有限公司 <a href="http://www.inforise.com.tw" target="_blank">Inforise Technology CO., ITD.</a>
+		&copy;2012 環保警察隊 資訊室
 	</div>
 </div>
 </body>

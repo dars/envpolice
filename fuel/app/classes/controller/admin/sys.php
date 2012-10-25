@@ -15,6 +15,8 @@ class Controller_Admin_Sys extends Controller_Admin
 		{
 			$data['users'][$u->id] = $u->name;
 		}
+		$model = Model_Assetsbackup::find()->get_one();
+		$data['backup_date'] = $model->backup_at;
 		$this->template->title = "系統管理";
 		$this->template->content = View::forge('sys/index',$data);
 	}
@@ -109,5 +111,61 @@ class Controller_Admin_Sys extends Controller_Admin
 		{
 			echo '{"error":"no file was uploaded"}';
 		}
+	}
+
+	public function action_backup_assets(){
+		$model = Model_Assetsbackup::find()->delete();
+		$model = Model_Assets::find()->get();
+		$time = date('Y-m-d');
+		foreach($model as $t){
+			$model2 = Model_Assetsbackup::forge();
+			$model2->id = $t->id;
+			$model2->user_id = $t->user_id;
+			$model2->total_no = $t->total_no;
+			$model2->sub_no = $t->sub_no;
+			$model2->name = $t->name;
+			$model2->location_id = $t->location_id;
+			$model2->buy_date = $t->buy_date;
+			$model2->expire_date = $t->expire_date;
+			$model2->expiration_time = $t->expiration_time;
+			$model2->amount = $t->amount;
+			$model2->qty = $t->qty;
+			$model2->years = $t->years;
+			$model2->note = $t->note;
+			$model2->status = $t->status;
+			$model2->created_at = $t->created_at;
+			$model2->updated_at = $t->updated_at;
+			$model2->backup_at = $time;
+			$model2->save();
+		}
+		Session::set_flash('notice',array('type'=>'success','msg'=>'資料已備份完成'));
+		Response::redirect('admin/sys');
+	}
+
+	public function action_restore_assets(){
+		$model = Model_Assets::find()->delete();
+		$model = Model_Assetsbackup::find()->get();
+		foreach($model as $t){
+			$model2 = Model_Assets::forge();
+			$model2->id = $t->id;
+			$model2->user_id = $t->user_id;
+			$model2->total_no = $t->total_no;
+			$model2->sub_no = $t->sub_no;
+			$model2->name = $t->name;
+			$model2->location_id = $t->location_id;
+			$model2->buy_date = $t->buy_date;
+			$model2->expire_date = $t->expire_date;
+			$model2->expiration_time = $t->expiration_time;
+			$model2->amount = $t->amount;
+			$model2->qty = $t->qty;
+			$model2->years = $t->years;
+			$model2->note = $t->note;
+			$model2->status = $t->status;
+			$model2->created_at = $t->created_at;
+			$model2->updated_at = $t->updated_at;
+			$model2->save();
+		}
+		Session::set_flash('notice',array('type'=>'success','msg'=>'資料已還原完成'));
+		Response::redirect('admin/sys');
 	}
 }

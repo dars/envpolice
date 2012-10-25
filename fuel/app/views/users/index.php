@@ -51,8 +51,8 @@ $(function(){
 				echo '<td>'.$group[$t->group].'</td>';
 				echo '<td>'.$status[$t->status].'</td>';
 				echo '<td>';
-				echo '<button class="btn btn-mini edit_btns" id="edit_'.$t->id.'"><i class="icon-pencil"></i></button>&nbsp;';
-				echo '<button class="btn btn-danger btn-mini dele_btns" id="dele_'.$t->id.'"><i class="icon-remove icon-white"></i></button>';
+				echo '<a class="btn btn-mini edit_btns" id="edit_'.$t->id.'">編輯</a>&nbsp;';
+				echo '<a class="btn btn-danger btn-mini dele_btns" id="dele_'.$t->id.'">刪除</a>';
 				echo '</td>';
 				echo '</tr>';
 				$index++;
