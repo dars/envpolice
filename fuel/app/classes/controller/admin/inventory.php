@@ -14,6 +14,7 @@ class Controller_Admin_Inventory extends Controller_admin
 	}
 	public function action_index()
 	{
+		Session::delete('sys_chks');
 		$view = View::forge('inventory/index');
 		$data = array();
 		$this->template->title = '使用中財產-財產清冊';

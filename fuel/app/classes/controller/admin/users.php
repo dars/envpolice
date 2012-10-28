@@ -12,6 +12,8 @@ class Controller_Admin_Users extends Controller_Admin
 
 	public function action_index()
 	{
+		Session::delete('chks');
+		Session::delete('sys_chks');
 		$model = Model_Users::find()->where('status',1)->get();
 		$this->template->title = '使用者列表-帳號管理';
 		$this->template->content = View::forge('users/index',array('model'=>$model,'group'=>$this->group,'status'=>$this->status));

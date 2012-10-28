@@ -8,6 +8,7 @@ class Controller_Admin_Sys extends Controller_Admin
 		parent::before();
 	}
 	public function action_index(){
+		Session::delete('chks');
 		if(Input::get('from_user')){
 			$result = Model_Assets::find()->where('user_id',Input::get('from_user'));
 			$config = array(
@@ -28,7 +29,7 @@ class Controller_Admin_Sys extends Controller_Admin
 			$data['result'] = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
 			$data['pagination'] = Pagination::create_links();
 			$data['offset'] = Pagination::$offset;
-			$data['sys_chks'] = Session::get('sys_chks');
+			$data['sys_chks'] = is_array(Session::get('sys_chks'))?Session::get('sys_chks'):array();
 		}
 		$users = Model_Users::find('all');
 		$data['users'] = array();
