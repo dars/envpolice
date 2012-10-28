@@ -8,6 +8,28 @@ class Controller_Admin_Sys extends Controller_Admin
 		parent::before();
 	}
 	public function action_index(){
+		if(Input::get('from_user')){
+			$result = Model_Assets::find()->where('user_id',Input::get('from_user'));
+			$config = array(
+				'pagination_url' => Uri::create('admin/sys/index'),
+				'total_items' => $result->count(),
+				'per_page' => 50,
+				'uri_segment' => 4,
+				'template' => array(
+					'previous_inactive_start' => '<span class="disabled"><a href="#">',
+					'previous_inactive_end' => '</a></span>',
+					'next_inactive_start' => '</span class="disabled"><a href="#">',
+			        'next_inactive_end' => '</a></span>',
+			        'active_start' => '<span class="active"><a href="#">',
+			        'active_end' => '</a></span>',
+				)
+			);
+			Pagination::set_config($config);
+			$data['result'] = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
+			$data['pagination'] = Pagination::create_links();
+			$data['offset'] = Pagination::$offset;
+			$data['sys_chks'] = Session::get('sys_chks');
+		}
 		$users = Model_Users::find('all');
 		$data['users'] = array();
 		$data['users'][0] = '請選擇';
@@ -18,7 +40,9 @@ class Controller_Admin_Sys extends Controller_Admin
 		$model = Model_Assetsbackup::find()->get_one();
 		$data['backup_date'] = $model->backup_at;
 		$this->template->title = "系統管理";
-		$this->template->content = View::forge('sys/index',$data);
+		$view = View::forge('sys/index');
+		$view->set('data',$data,false);
+		$this->template->content = $view;
 	}
 	public function action_get_assets($id){
 		$result = Model_Assets::find()->where('user_id','=',$id);
@@ -41,11 +65,14 @@ class Controller_Admin_Sys extends Controller_Admin
 
 		$model = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
 		$result = "<table class='table table-striped table-bordered table-condensed'>";
-		$result.= "<tr><th>項目</th><th>總號</th><th>分類編號</th><th>品名</th><th>金額</th><th>到期日</th></tr>";
+		$result.= "<tr>";
+		$result.= "<th><input type='checkbox' id='chk_page_btn'></th>";
+		$result.= "<th>項目</th><th>總號</th><th>分類編號</th><th>品名</th><th>金額</th><th>到期日</th></tr>";
 		$index = 1;
 		if($model){
 			foreach($model as $t){
 				$result.= "<tr>";
+				$result.= "<td><input type='checkbox' id='chk_".$t->id."' class='chk_btn'></td>";
 				$result.= "<td>".(Pagination::$offset+$index)."</td>";
 				$result.= "<td>".$t->total_no."</td>";
 				$result.= "<td>".$t->sub_no."</td>";
@@ -61,14 +88,22 @@ class Controller_Admin_Sys extends Controller_Admin
 		return $result;
 	}
 	public function action_chg_user(){
-		if(Input::method() == 'POST'){
-			$model = Model_Assets::find()->where('user_id','=',Input::post('from_user'))->get();
-			foreach($model as $t){
-				$t->user_id = Input::post('to_user');
-				$t->save();
+		$sys_chks = Session::get('sys_chks');
+		var_dump($sys_chks);
+		if(is_array($sys_chks)){
+			if(Input::method() == 'POST'){
+				$model = Model_Assets::find()->where('user_id','=',Input::post('from_user'))->where('id','in',$sys_chks)->get();
+				foreach($model as $t){
+					$t->user_id = Input::post('to_user');
+					$t->save();
+				}
+				Session::set_flash('notice',array('type'=>'success','msg'=>'資料已儲存'));
+				Response::redirect('admin/sys');
 			}
-			Session::set_flash('notice',array('type'=>'success','msg'=>'資料已儲存'));
-			Response::redirect('admin/sys');
+			Session::set('sys_chks',array());
+		}else{
+			Session::set_flash('notice',array('type'=>'error','msg'=>'資料設定異常'));
+				Response::redirect('admin/sys');
 		}
 	}
 	public function action_import_assets(){
@@ -167,5 +202,59 @@ class Controller_Admin_Sys extends Controller_Admin
 		}
 		Session::set_flash('notice',array('type'=>'success','msg'=>'資料已還原完成'));
 		Response::redirect('admin/sys');
+	}
+
+	public function action_chk_session(){
+		$this->template = null;
+		if(Input::method() == 'POST')
+		{
+			$chks = Session::get('sys_chks');
+			$ids = explode(',',Input::post('ids'));
+
+			if(!is_array($chks)){
+				$chks = array();
+			}
+			
+			if(Input::post('status') == 1)
+			{
+				foreach($ids as $t)
+				{
+					if(array_search($t,$chks) === false)
+					{
+						array_push($chks,$t); 
+					}
+				}
+			}
+			else
+			{
+				foreach($ids as $t)
+				{
+					$index = array_search($t,$chks);
+					unset($chks[$index]);
+				}
+			}
+			$chks = array_unique($chks);
+			sort($chks);
+			Session::set('sys_chks',$chks);
+		}
+	}
+
+	public function action_chk_all_session(){
+		$this->template = null;
+		if(Input::method() == 'POST')
+		{
+			$chks = array();
+			if(Input::post('status') == 1)
+			{
+				$result = Model_Assets::find()->where('user_id',Input::get('user_id'));
+				$res = $result->get();
+				foreach($res as $t){
+					array_push($chks,$t->id);
+				}
+			}
+			$chks = array_unique($chks);
+			sort($chks);
+			Session::set('sys_chks',$chks);
+		}
 	}
 }
