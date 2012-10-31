@@ -144,7 +144,7 @@ $(function() {
 });
 </script>
 <div>
-	<?php echo Form::open(array('class'=>'well form-inline','method'=>'get')) ?>
+	<?php echo Form::open(array('action'=>Uri::create('admin/inventory/index'),'class'=>'well form-inline','method'=>'get')) ?>
 	<table>
 		<tr>
 			<?php $condition = Session::get('condition'); ?>
