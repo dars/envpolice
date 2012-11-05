@@ -141,6 +141,7 @@ $(function() {
 			data:'status='+chk
 		});
 	}
+	
 });
 </script>
 <div>

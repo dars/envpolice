@@ -9,7 +9,6 @@ class Controller_Admin_Inventory extends Controller_admin
 		if(@Uri::segment(3) == 'print_assets'){
 			$this->template = 'tmpl2';
 		}
-	
 		parent::before();
 	}
 	public function action_index()
