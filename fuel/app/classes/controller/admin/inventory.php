@@ -113,6 +113,7 @@ class Controller_Admin_Inventory extends Controller_admin
 			$result->where('user_id',$auth[1]);
 		}
 		$result->order_by('created_at','desc');
+		$data['total_result'] = $result->count();
 		$config = array(
 			'pagination_url' => Uri::create('admin/inventory/index'),
 			'total_items' => $result->count(),
@@ -145,7 +146,6 @@ class Controller_Admin_Inventory extends Controller_admin
 		{
 			$data['locations'][$l->id] = $l->name;
 		}
-		$data['total_result'] = $result->count();
 		$data['result'] = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
 		$data['pagination'] = Pagination::create_links();
 		$data['offset'] = Pagination::$offset;
