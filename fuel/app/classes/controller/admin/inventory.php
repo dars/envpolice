@@ -104,7 +104,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		}
 
 		if(Input::get('expiration_time')!=NULL || isset($condition['expiration_time'])){
-			$query = DB::query('UPDATE assets SET `expiration_time` = DATEDIFF(`expire_date` , `buy_date`)');
+			$query = DB::query("UPDATE assets SET `expiration_time` = DATEDIFF('".(date('Y')-1911)."/".date("m/d")."' , `expire_date`)");
 			$query->execute();
 
 			$condition['expiration_time'] = Input::get('expiration_time', @$condition['expiration_time']);
