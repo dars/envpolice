@@ -412,7 +412,7 @@ class Controller_Admin_Inventory extends Controller_admin
 	{
 		$this->template = false;
 		$chks = Session::get('chks');
-		if(is_array($chks)){
+		if(is_array($chks) && count($chks)>0){
 			$objs = Model_Assets::find()->where('id','IN',$chks)->get();
 
 			Autoloader::add_class('PHPExcel',APPPATH.'vendor/PHPExcel.php');
