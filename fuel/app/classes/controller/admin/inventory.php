@@ -363,25 +363,25 @@ class Controller_Admin_Inventory extends Controller_admin
 				if(isset($condition['status'])){
 					$result->where('status',$condition['status']);
 				}
-				if(isset($condition['sub_no'])){
+				if(isset($condition['sub_no']) && $condition['sub_no'] != ''){
 					$result->where('sub_no',$condition['sub_no']);
 				}
-				if(isset($condition['name'])){
-					$result->where('name',$condition['name']);
+				if(isset($condition['name']) && $condition['name'] != ''){
+					$result->where('name', '%'.$condition['name'].'%');
 				}
-				if(isset($condition['note'])){
-					$result->where('note','like',$condition['note']);
+				if(isset($condition['note']) && $condition['note'] != ''){
+					$result->where('note','like','%'.$condition['note'].'%');
 				}
-				if(isset($condition['user_id'])){
+				if(isset($condition['user_id']) && $condition['user_id'] != ''){
 					$result->where('user_id',$condition['user_id']);
 				}
-				if(isset($condition['location_id'])){
+				if(isset($condition['location_id']) && $condition['location_id'] != ''){
 					$result->where('location_id',$condition['location_id']);
 				}
-				if(isset($condition['buy_date'])){
+				if(isset($condition['buy_date']) && $condition['buy_date'] != ''){
 					$result->where('buy_date',$condition['buy_date']);
 				}
-				if(isset($condition['expiration_time'])){
+				if(isset($condition['expiration_time']) && $condition['expiration_time'] != ''){
 					$result->where('expiration_time',$condition['expiration_time']);
 				}
 				if(!Auth::member(100) && !Auth::member(50)){
