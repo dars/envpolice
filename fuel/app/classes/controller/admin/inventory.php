@@ -355,6 +355,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		$this->template = null;
 		if(Input::method() == 'POST')
 		{
+			Session::delete('chks');
 			$chks = array();
 			if(Input::post('status') == 1)
 			{
@@ -394,7 +395,6 @@ class Controller_Admin_Inventory extends Controller_admin
 			}
 			$chks = array_unique($chks);
 			sort($chks);
-			var_dump($chks);
 			Session::set('chks',$chks);
 		}
 	}
