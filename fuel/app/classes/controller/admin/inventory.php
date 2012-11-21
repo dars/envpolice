@@ -526,7 +526,7 @@ class Controller_Admin_Inventory extends Controller_admin
 			$file = " 環保警察隊財產清冊_".date('Ymd').".xls";
 			
 			header('Content-Type: application/vnd.ms-excel');
-			header('Content-Disposition: attachment; filename="'.$file.'"');
+			header('Content-Disposition: attachment; filename="'.iconv('utf8', 'big5', $file).'"');
 			header('Cache-Control: max-age=0');
 			$objWriter = PHPExcel_IOFactory::createWriter($xls_obj, 'Excel5');
 			$objWriter->save('php://output');
