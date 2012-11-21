@@ -108,7 +108,14 @@ class Controller_Admin_Inventory extends Controller_admin
 			$query->execute();
 
 			$condition['expiration_time'] = Input::get('expiration_time', @$condition['expiration_time']);
-			$result->where('expiration_time',Input::get('expiration_time', @$condition['expiration_time']));
+			$ex_query = Input::get('expiration_time', @$condition['expiration_time']);
+			if($ex_query === '0'){
+				$result->where('expiration_time','<=',0);
+			}else if($ex_query == '*'){
+				$result->where('expiration_time','>',0);
+			}else{
+				$result->where('expiration_time',Input::get('expiration_time', @$condition['expiration_time']));
+			}
 		}
 		Session::set('condition',$condition);
 		$auth = Auth::instance()->get_user_id();
