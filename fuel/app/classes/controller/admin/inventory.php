@@ -538,7 +538,9 @@ class Controller_Admin_Inventory extends Controller_admin
 			$objWriter = PHPExcel_IOFactory::createWriter($xls_obj, 'Excel5');
 			$objWriter->save('php://output');
 		}else{
-			echo '資料錯誤,請重新選取';
+			header('Content-Type:text/html; charset=utf-8');
+			echo '資料錯誤,請重新選取<br><br>';
+			echo '<a href="javascript:history.back()">回上一頁</a>';
 		}
 	}
 }
