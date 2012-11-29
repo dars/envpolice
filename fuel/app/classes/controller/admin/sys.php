@@ -39,7 +39,11 @@ class Controller_Admin_Sys extends Controller_Admin
 			$data['users'][$u->id] = $u->name;
 		}
 		$model = Model_Assetsbackup::find()->get_one();
-		$data['backup_date'] = $model->backup_at;
+		if($model){
+			$data['backup_date'] = $model->backup_at;
+		}else{
+			$data['backup_date'] = '';
+		}
 		$this->template->title = "系統管理";
 		$view = View::forge('sys/index');
 		$view->set('data',$data,false);
@@ -125,20 +129,21 @@ class Controller_Admin_Sys extends Controller_Admin
 			$sheet = $xls->getSheet(0);
 			$total_row = $sheet->getHighestRow();
 			for($row=3;$row<=$total_row;$row++){
-				$model = Model_Assets::forge();
-				$model->total_no = trim($sheet->getCellByColumnAndRow(1,$row)->getValue());
-				$model->sub_no = trim($sheet->getCellByColumnAndRow(2,$row)->getValue());
-				$model->name = trim($sheet->getCellByColumnAndRow(3,$row)->getValue());
-				$model->qty = (int)trim($sheet->getCellByColumnAndRow(4,$row)->getValue());
-				$model->buy_date = trim($sheet->getCellByColumnAndRow(5,$row)->getValue());
-				$model->years = (int)trim($sheet->getCellByColumnAndRow(6,$row)->getValue());
-				$model->amount = (int)trim($sheet->getCellByColumnAndRow(7,$row)->getValue());
-				$model->location_id = Model_Locations::get_location_id(trim($sheet->getCellByColumnAndRow(8,$row)->getValue()));
-				$model->user_id = Model_Users::get_user_id(trim($sheet->getCellByColumnAndRow(9,$row)->getValue()));
-				$model->expire_date = trim($sheet->getCellByColumnAndRow(10,$row)->getValue());
-				$model->expiration_time = trim($sheet->getCellByColumnAndRow(11,$row)->getValue());
-				$model->status = 1;
-				$model->save();
+				if(trim($sheet->getCellByColumnAndRow(1,$row)->getValue()) != ''){
+					$model = Model_Assets::forge();
+					$model->total_no = trim($sheet->getCellByColumnAndRow(1,$row)->getValue());
+					$model->sub_no = trim($sheet->getCellByColumnAndRow(2,$row)->getValue());
+					$model->name = trim($sheet->getCellByColumnAndRow(3,$row)->getValue());
+					$model->qty = (int)trim($sheet->getCellByColumnAndRow(4,$row)->getValue());
+					$model->buy_date = trim($sheet->getCellByColumnAndRow(5,$row)->getValue());
+					$model->years = (int)trim($sheet->getCellByColumnAndRow(6,$row)->getValue());
+					$model->amount = (int)trim($sheet->getCellByColumnAndRow(7,$row)->getValue());
+					$model->location_id = Model_Locations::get_location_id(trim($sheet->getCellByColumnAndRow(8,$row)->getValue()));
+					$model->user_id = Model_Users::get_user_id(trim($sheet->getCellByColumnAndRow(9,$row)->getValue()));
+					$model->expire_date = trim($sheet->getCellByColumnAndRow(10,$row)->getValue());
+					$model->status = 1;
+					$model->save();
+				}
 			}
 			Session::set_flash('notice',array('type'=>'success','msg'=>'資料已匯入完成'));
 			Response::redirect('admin/sys');

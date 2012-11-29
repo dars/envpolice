@@ -91,7 +91,9 @@ $(function(){
 <div class="well">
 	<?php echo Form::button('backup_btn','備份財產',array('class'=>'btn btn-success','type'=>'button','id'=>'backup_btn')) ?>
 	<?php if(isset($data['backup_date'])):?>
-	<?php echo Form::button('restore_btn','還原財產&nbsp;('.$data['backup_date'].')',array('class'=>'btn btn-info','type'=>'button','id'=>'restore_btn')) ?>
+	<?php if($data['backup_date']):?>
+		<?php echo Form::button('restore_btn','還原財產&nbsp;('.$data['backup_date'].')',array('class'=>'btn btn-info','type'=>'button','id'=>'restore_btn')) ?>
+	<?php endif;?>
 	<?php endif;?>
 </div>
 
