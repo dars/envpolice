@@ -170,7 +170,7 @@ $(function() {
 			<td><?php echo Form::label('採購日期：') ?></td>
 			<td><?php echo Form::input('buy_date',isset($condition['buy_date'])?$condition['buy_date']:'',array('class'=>'span2'))?></td>
 			<td><?php echo Form::label('逾期時間：') ?></td>
-			<td><?php echo Form::input('expiration_time',isset($condition['expiration_time'])?$condition['expiration_time']:'',array('class'=>'span2'))?></td>
+			<td><?php echo Form::select('expiration_time',isset($condition['expiration_time'])?$condition['expiration_time']:'',array(''=>'請選擇','0'=>'未逾期','*'=>'已逾期'),array('class'=>'span2'))?></td>
 		</tr>
 		<tr>
 			<td colspan=6 style="text-align:right">
@@ -230,7 +230,13 @@ if($data['result']){
 		echo '<td>'.$t->sub_no.'</td>';
 		echo '<td>'.$t->name.'</td>';
 		echo '<td class="money">$'.number_format($t->amount,2).'</td>';
-		echo '<td><nobr>'.Html::anchor(Uri::create('admin/users/view/'.$t->user_id),$t->user->name).'</nobr></td>';
+		echo '<td><nobr>';
+		if($t->user_id != '0'){
+			echo Html::anchor(Uri::create('admin/users/view/'.$t->user_id),$t->user->name);
+		}else{
+			echo '-';
+		}
+		echo '</nobr></td>';
 		echo '<td>'.$t->expire_date.'</td>';
 		echo '</tr>';
 		$sn++;
