@@ -43,6 +43,16 @@ $(function() {
 		}
 	});
 
+	// 還原
+	$('#del_btn2').click(function(){
+		var objs = $('.chk_btn:checked');
+		type = 'delete2';
+		if(objs.length > 0){
+			$('#type_str').html('還原');
+			$('#myModal').modal('show');
+		}
+	});
+
 	$('#del_sub_btn').click(function(){
 		var objs = $('.chk_btn:checked');
 		var ids = new Array();
@@ -198,11 +208,13 @@ $(function() {
 </div>
 <?php if(Auth::member(100)):?>
 <div class="btn-group" style="float:right">
-	<?php if(Input::get('status') != 'deleted'):?>
+	<?php if($data['status'] != 'deleted'):?>
 		<button class="btn btn-info" id="add_btn"><i class="icon-plus icon-white"></i>新增</button>
 		<button class="btn btn-inverse" id="minus_btn"><i class="icon-minus-sign icon-white"></i>報廢</button>
-	<?php endif;?>
-	<button class="btn btn-danger" id="del_btn"><i class="icon-remove icon-white"></i>刪除</button>
+		<button class="btn btn-danger" id="del_btn"><i class="icon-remove icon-white"></i>刪除</button>
+	<?php else: ?>
+		<button class="btn btn-danger" id="del_btn2"><i class="icon-remove icon-white"></i>還原</button>
+	<?php endif; ?>
 </div>
 <?php endif; ?>
 <br><br>

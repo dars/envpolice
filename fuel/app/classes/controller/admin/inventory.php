@@ -29,19 +29,20 @@ class Controller_Admin_Inventory extends Controller_admin
 			$condition = array();
 		}
 
-		if(Input::get('status'))
-		{
-			if(Input::get('status') == 'deleted')
-			{
+		if(Input::get('status')){
+			if(Input::get('status') == 'deleted'){
+				$data['status'] = 'deleted';
 				$condition = array();
 				$condition['status'] = 0;
 				$result->where('status',0);
 			}
-		}
-		else
-		{
+		}else if(!empty($condition['status']) && $condition['status'] == 0){
+			$data['status'] = 'deleted';
+			$result->where('status', 0);
+		}else{
 			$condition['status'] = 1;
-			$result->where('status',1);
+			$data['status'] = 'normal';
+			$result->where('status', 1);
 		}
 
 		// 搜尋條件
@@ -319,6 +320,27 @@ class Controller_Admin_Inventory extends Controller_admin
 		}
 		Session::set('chks',array());
 		Session::set_flash('notice',array('type'=>'success','msg'=>'資料已刪除完畢'));
+		$res = new stdClass();
+		$res->success = true;
+		echo json_encode($res);
+	}
+
+	public function action_delete2(){
+		if(!Auth::member(100)){
+			Session::set_flash('notice',array('type'=>'error','msg'=>'您無此動作的權限'));
+			Response::redirect('admin/inventory');
+		}
+		$this->template = false;
+		$ids = explode(',',Input::post('ids'));
+		foreach($ids as $v){
+			$model = Model_Assets::find($v);
+			if($model){
+				$model->status = 1;
+				$model->save();
+			}
+		}
+		Session::set('chks',array());
+		Session::set_flash('notice',array('type'=>'success','msg'=>'資料已還原完畢'));
 		$res = new stdClass();
 		$res->success = true;
 		echo json_encode($res);
