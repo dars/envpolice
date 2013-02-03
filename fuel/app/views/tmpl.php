@@ -50,8 +50,10 @@ $(function(){
 		<ul>
 			<li><?php echo Html::anchor('admin/inventory?clear=true','財產清冊');?></a></li>
 			<li><?php echo Html::anchor('admin/inventory?status=deleted','已報廢財產');?></li>
-			<li><?php echo Html::anchor('admin/users','帳號管理');?></li>
-			<li><?php echo Html::anchor('admin/sys','系統管理');?></li>
+			<?php if(Auth::member(100)):?>
+				<li><?php echo Html::anchor('admin/users','帳號管理');?></li>
+				<li><?php echo Html::anchor('admin/sys','系統管理');?></li>
+			<?php endif;?>
 		</ul>
 	</div>
 	<div id="rightContent">
