@@ -193,14 +193,15 @@ $(function() {
 <div class="btn-group" style="float:left">
 	<button class="btn" id="sele_all"><i class="icon-ok"></i>選擇全部</button>
 	<button class="btn" id="cancel_sele_all"><i class="icon-remove"></i>取消全部</button>
-	<!-- <button class="btn" id="dele_page"><i class="icon-repeat"></i>取消此頁</button> -->
 	<button class="btn btn-success" id="print_btn"><i class="icon-print icon-white"></i>列印</button>
 	<button class="btn btn-warning" id="parse_xls"><i class="icon-share icon-white"></i>匯出</button>
 </div>
 <?php if(Auth::member(100)):?>
 <div class="btn-group" style="float:right">
-	<button class="btn btn-info" id="add_btn"><i class="icon-plus icon-white"></i>新增</button>
-	<button class="btn btn-inverse" id="minus_btn"><i class="icon-minus-sign icon-white"></i>報廢</button>
+	<?php if(Input::get('status') != 'deleted'):?>
+		<button class="btn btn-info" id="add_btn"><i class="icon-plus icon-white"></i>新增</button>
+		<button class="btn btn-inverse" id="minus_btn"><i class="icon-minus-sign icon-white"></i>報廢</button>
+	<?php endif;?>
 	<button class="btn btn-danger" id="del_btn"><i class="icon-remove icon-white"></i>刪除</button>
 </div>
 <?php endif; ?>
