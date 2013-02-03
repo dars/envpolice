@@ -15,7 +15,7 @@ class Model_Assets extends \Orm\Model
 		'qty',
 		'years',
 		'note',
-		'status',
+		'status' => array('default' => 1),
 		'created_at',
 		'updated_at',
 	);

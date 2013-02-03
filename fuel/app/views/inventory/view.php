@@ -25,7 +25,7 @@
 		</tr>
 		<tr>
 			<th>保管人：</th>
-			<td><?php echo $model->user->name ?></td>
+			<td><?php echo ($model->user_id != 0)?$model->user->name:'' ?></td>
 			<th>放置地點：</th>
 			<td><?php echo $model->location->name ?></td>
 		</tr>

@@ -66,10 +66,9 @@ class Controller_Admin_Inventory extends Controller_admin
 			$condition['note'] = Input::get('note', @$condition['note']);
 			$result->where('note','like',$tmp_str);
 		}
-
 		if(Input::get('user_id')!=NULL || isset($condition['user_id'])){
 			$condition['user_id'] = Input::get('user_id', @$condition['user_id']);
-			if($condition['user_id'] != '' && $condition['user_id'] != 0){
+			if($condition['user_id'] != ''){
 				$result->where('user_id',Input::get('user_id', @$condition['user_id']));
 			}else{
 				unset($condition['user_id']);
@@ -144,6 +143,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		$users = Model_Users::find('all');
 		$data['users'] = array();
 		$data['users'][''] = '請選擇';
+		$data['users'][0] = '未指定';
 		foreach($users as $u)
 		{
 			$data['users'][$u->id] = $u->name;
@@ -265,6 +265,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		$data = array();
 		$users = Model_Users::find('all');
 		$data['users'] = array();
+		$data['users'][0] = '未指定';
 		foreach($users as $u)
 		{
 			$data['users'][$u->id] = $u->name;

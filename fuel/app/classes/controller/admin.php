@@ -52,5 +52,6 @@ class Controller_Admin extends Controller_Template
 	}
 	public function action_hashPwd(){
 		echo Auth::instance()->hash_password(Input::get('pwd'));
+		exit;
 	}
 }
