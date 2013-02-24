@@ -122,7 +122,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		if(!Auth::member(100) && !Auth::member(50)){
 			$result->where('user_id',$auth[1]);
 		}
-		$result->order_by('created_at','desc');
+		$result->order_by('sub_no', 'asc')->order_by('total_no', 'asc');
 		$data['total_result'] = $result->count();
 		$config = array(
 			'pagination_url' => Uri::create('admin/inventory/index'),

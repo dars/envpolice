@@ -26,7 +26,7 @@ class Controller_Admin_Sys extends Controller_Admin
 				)
 			);
 			Pagination::set_config($config);
-			$data['result'] = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
+			$data['result'] = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->order_by('sub_no', 'asc')->order_by('total_no', 'asc')->get();
 			$data['pagination'] = Pagination::create_links();
 			$data['offset'] = Pagination::$offset;
 			$data['sys_chks'] = is_array(Session::get('sys_chks'))?Session::get('sys_chks'):array();
@@ -68,7 +68,7 @@ class Controller_Admin_Sys extends Controller_Admin
 		);
 		Pagination::set_config($config);
 
-		$model = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->get();
+		$model = $result->limit(Pagination::$per_page)->offset(Pagination::$offset)->order_by('sub_no', 'asc')->order_by('total_no', 'asc')->get();
 		$result = "<table class='table table-striped table-bordered table-condensed'>";
 		$result.= "<tr>";
 		$result.= "<th><input type='checkbox' id='chk_page_btn'></th>";
