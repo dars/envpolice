@@ -112,6 +112,9 @@ class Controller_Admin_Sys extends Controller_Admin
 		}
 	}
 	public function action_import_assets(){
+		// 先清空資料庫
+		Model_Assets::find()->delete();
+
 		$this->template = false;
 		$config = array(
 			'path'=> DOCROOT.'temp',
@@ -220,14 +223,14 @@ class Controller_Admin_Sys extends Controller_Admin
 			if(!is_array($chks)){
 				$chks = array();
 			}
-			
+
 			if(Input::post('status') == 1)
 			{
 				foreach($ids as $t)
 				{
 					if(array_search($t,$chks) === false)
 					{
-						array_push($chks,$t); 
+						array_push($chks,$t);
 					}
 				}
 			}
