@@ -112,9 +112,6 @@ class Controller_Admin_Sys extends Controller_Admin
 		}
 	}
 	public function action_import_assets(){
-		// 先清空資料庫
-		Model_Assets::find()->delete();
-
 		$this->template = false;
 		$config = array(
 			'path'=> DOCROOT.'temp',
@@ -125,6 +122,8 @@ class Controller_Admin_Sys extends Controller_Admin
 		if(Upload::is_valid())
 		{
 			Upload::save();
+			// 先清空資料庫
+			Model_Assets::find()->delete();
 			$file = Upload::get_files(0);
 			Autoloader::add_class('PHPExcel_IOFactory',APPPATH.'vendor/PHPExcel/IOFactory.php');
 			$reader = PHPExcel_IOFactory::createReader('Excel5');
