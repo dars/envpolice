@@ -18,7 +18,7 @@ class Controller_Admin_Inventory extends Controller_admin
 		$data = array();
 		$this->template->title = '使用中財產-財產清冊';
 		$result = Model_Assets::find();
-		
+
 		if(Input::get('clear')){
 			Session::delete('condition');
 		}
@@ -140,7 +140,7 @@ class Controller_Admin_Inventory extends Controller_admin
 
 		);
 		Pagination::set_config($config);
-		
+
 		$users = Model_Users::find('all');
 		$data['users'] = array();
 		$data['users'][''] = '請選擇';
@@ -356,14 +356,14 @@ class Controller_Admin_Inventory extends Controller_admin
 			if(!is_array($chks)){
 				$chks = array();
 			}
-			
+
 			if(Input::post('status') == 1)
 			{
 				foreach($ids as $t)
 				{
 					if(array_search($t,$chks) === false)
 					{
-						array_push($chks,$t); 
+						array_push($chks,$t);
 					}
 				}
 			}
@@ -460,7 +460,7 @@ class Controller_Admin_Inventory extends Controller_admin
 			$xls_obj->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$xls_obj->getActiveSheet()->getStyle('A1')->getAlignment()->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 			$xls_obj->getActiveSheet()->setCellValue('A1', $title);
-	
+
 			$xls_obj->getActiveSheet()->getRowDimension('2')->setRowHeight(18);
 			$xls_obj->getActiveSheet()->setCellValue('A2', '項次');
 			$xls_obj->getActiveSheet()->setCellValue('B2', '總號');
@@ -475,7 +475,7 @@ class Controller_Admin_Inventory extends Controller_admin
 			$xls_obj->getActiveSheet()->setCellValue('K2', '到期日');
 			$xls_obj->getActiveSheet()->setCellValue('L2', '逾期時間');
 			$xls_obj->getActiveSheet()->setCellValue('M2', '備註');
-	
+
 			$start_row = 3;
 			$index = 1;
 			foreach($objs as $t):
@@ -488,14 +488,14 @@ class Controller_Admin_Inventory extends Controller_admin
 				$xls_obj->getActiveSheet()->setCellValue('G'.$start_row, $t->years);
 				$xls_obj->getActiveSheet()->setCellValue('H'.$start_row, number_format($t->amount,2));
 				$xls_obj->getActiveSheet()->setCellValue('I'.$start_row, $t->location->name);
-				$xls_obj->getActiveSheet()->setCellValue('J'.$start_row, $t->user->name);
+				$xls_obj->getActiveSheet()->setCellValue('J'.$start_row, @$t->user->name);
 				$xls_obj->getActiveSheet()->setCellValue('K'.$start_row, $t->expire_date);
 				$xls_obj->getActiveSheet()->setCellValue('L'.$start_row, Model_Assets::get_expire_day($t->expire_date));
 				$xls_obj->getActiveSheet()->setCellValue('M'.$start_row, $t->note);
 				$index++;
 				$start_row++;
 			endforeach;
-	
+
 			//設定格式到A2~M2欄位
 			$xls_obj->getActiveSheet()->getStyle('A2')->getFont()->getColor()->setARGB(PHPExcel_Style_Color::COLOR_BLUE);
 			$xls_obj->getActiveSheet()->getStyle('A2')->getFont()->setBold(true);
@@ -523,7 +523,7 @@ class Controller_Admin_Inventory extends Controller_admin
 			$xls_obj->getActiveSheet()->getColumnDimension('L')->setWidth(10);
 			$xls_obj->getActiveSheet()->getColumnDimension('M')->setWidth(20);
 			$n = $index+2;
-	
+
 			$xls_obj->getActiveSheet()->getStyle('A3')->getAlignment()->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 			$xls_obj->getActiveSheet()->getStyle('A3')->getBorders()->getBottom()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 			$xls_obj->getActiveSheet()->getStyle('A3')->getBorders()->getLeft()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
@@ -545,16 +545,16 @@ class Controller_Admin_Inventory extends Controller_admin
 			$xls_obj->getActiveSheet()->getStyle('M3')->getFont()->setSize(9);
 			$xls_obj->getActiveSheet()->getStyle('M3')->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
 			$xls_obj->getActiveSheet()->duplicateStyle( $xls_obj->getActiveSheet()->getStyle('M3'), 'M4:M'.$n );
-	
+
 			$xls_obj->getActiveSheet()->getDefaultStyle()->getFont()->setName('Arial');
 			$xls_obj->getActiveSheet()->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(2, 2);
 			$xls_obj->getActiveSheet()->getPageSetup()->setOrientation(PHPExcel_Worksheet_PageSetup::ORIENTATION_LANDSCAPE);
 			$xls_obj->getActiveSheet()->getPageSetup()->setPaperSize(PHPExcel_Worksheet_PageSetup::PAPERSIZE_A4);
-	
+
 			Autoloader::add_class('PHPExcel_Writer_Excel5',APPPATH.'vendor/PHPExcel/Writer/Excel5.php');
 			$objWriter = new PHPExcel_Writer_Excel5($xls_obj);
 			$file = " 環保警察隊財產清冊_".date('Ymd').".xls";
-			
+
 			header('Content-Type: application/vnd.ms-excel');
 			header('Content-Disposition: attachment; filename="'.iconv('UTF-8', 'BIG5', $file).'"');
 			header('Cache-Control: max-age=0');
