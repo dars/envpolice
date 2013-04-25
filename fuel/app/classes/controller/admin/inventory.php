@@ -415,6 +415,7 @@ class Controller_Admin_Inventory extends Controller_admin
 				if(isset($condition['expiration_time']) && $condition['expiration_time'] != ''){
 					$result->where('expiration_time',$condition['expiration_time']);
 				}
+				$auth = Auth::instance()->get_user_id();
 				if(!Auth::member(100) && !Auth::member(50)){
 					$result->where('user_id',$auth[1]);
 				}
